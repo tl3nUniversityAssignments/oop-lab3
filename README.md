@@ -1,0 +1,2 @@
+# QRaptor
+QR-code scanner
