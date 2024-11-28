@@ -5,13 +5,10 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:id="@+id/historyFragment"
+    <ListView
+        android:id="@+id/history_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="History"
-        android:textSize="40sp"
-        android:textAlignment="center"/>
+        android:padding="16dp" />
 
 </FrameLayout>

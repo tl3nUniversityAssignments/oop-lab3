@@ -53,4 +53,5 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
 
     implementation(libs.code.scanner)
+    implementation(libs.gson)
 }

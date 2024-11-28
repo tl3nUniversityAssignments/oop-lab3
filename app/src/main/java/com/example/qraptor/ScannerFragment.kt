@@ -1,5 +1,6 @@
 package com.example.qraptor
 
+import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -17,6 +18,8 @@ import com.budiyev.android.codescanner.CodeScannerView
 import com.budiyev.android.codescanner.DecodeCallback
 import com.budiyev.android.codescanner.ErrorCallback
 import com.budiyev.android.codescanner.ScanMode
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.google.zxing.Result
 
 private const val CAMERA_REQUEST_CODE = 101
@@ -39,12 +42,28 @@ class ScannerFragment : Fragment(R.layout.fragment_scanner) {
 
         setupPermissions()
 
+        val sharedPreferences = activity.getSharedPreferences("qr_history", Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+
+        val jsonHistory = sharedPreferences.getString("history", "[]")
+        val historyList: MutableList<ScannedData> = Gson().fromJson(jsonHistory, object: TypeToken<MutableList<ScannedData>>() {}.type)
+
         codeScanner = CodeScanner(activity, scannerView)
         codeScanner.decodeCallback = DecodeCallback { result: Result ->
             activity.runOnUiThread {
-                // Toast.makeText(activity, it.text, Toast.LENGTH_LONG).show()
                 hintView.text = getString(R.string.code_scan_last, result.text)
-                val dialog = ScanResultDialog(activity, result)
+
+                val scannedData = ScannedData(
+                    content = result.text,
+                    format = result.barcodeFormat.name,
+                    timestamp = System.currentTimeMillis()
+                )
+
+                historyList.add(scannedData)
+                editor.putString("history", Gson().toJson(historyList))
+                editor.apply()
+
+                val dialog = ScanResultDialog(activity, scannedData)
                 dialog.setOnDismissListener {
                     codeScanner.startPreview()
                 }
